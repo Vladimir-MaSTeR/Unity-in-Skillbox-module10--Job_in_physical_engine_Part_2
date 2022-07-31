@@ -6,46 +6,50 @@ public class Push : MonoBehaviour
 {
     [SerializeField] private float power;
     [SerializeField] private float pauseTime;
-    [SerializeField] private Rigidbody rigidbody;
-    [SerializeField] private ConfigurableJoint configurableJoint;
+    [SerializeField] private float freeTime;
+  //  [SerializeField] private Rigidbody rigidbody;
+   // [SerializeField] private ConfigurableJoint configurableJoint;
 
-    private bool boom = false;
-    private float currentTime;
-    //private Rigidbody rigidbody;
+  //  private bool boom = false;
+    private float currentTimePaused;
+    private float currentTimeFree;
+    private Rigidbody rigidbody;
     private void Start()
     {
-        currentTime = pauseTime;
+        currentTimePaused = pauseTime;
+        currentTimeFree = freeTime;
 
-        //rigidbody.GetComponent<Rigidbody>();
+        rigidbody = GetComponent<Rigidbody>();
     }
 
 
     private void FixedUpdate()
     {
-        Vector3 position = configurableJoint.targetPosition;
-        if (boom)
+
+        currentTimeFree -= Time.deltaTime;
+       
+        if (currentTimeFree <= 0 && currentTimePaused > 0)
         {
-            //transform.position = new Vector3(4.697f, 0.5181859f, -8.3f);
 
-           
-            configurableJoint.targetPosition = new Vector3(0, 0, -3f);
-            currentTime -= Time.deltaTime;
+            rigidbody.AddForce(0, 0, -power, ForceMode.Acceleration);
 
-            if (currentTime <= 0)
-            {
-                // transform.position = new Vector3(4.697f, 0.5181859f, -7.5f);
-                configurableJoint.targetPosition = new Vector3(0, 0, 0);
-                rigidbody.AddForce(0, 0, power, ForceMode.Impulse);
-                boom = false;
-                currentTime = pauseTime;
-               
+            currentTimePaused -= Time.deltaTime;
 
-            }
+            
+
+        } else if (currentTimePaused <= 0)
+        {
+            currentTimeFree = freeTime;
+            currentTimePaused = pauseTime;
         }
     }       
 
+
+
+    /*
     public void StartBoom()
     {
         boom = true;
     }
+    */
 }
